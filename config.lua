@@ -3,21 +3,39 @@ local ESX = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
+
+Config = {}
+Config.Locale = 'it'
+
 Config.SingleItem = true --with this flag is possible use only one item components for all weapons, divided by function, otherwise it's necessary specific item for any components for any weapons.
 
 Config.UseKeyBind = true
 Config.KeyBind = "F5"
 
-Config.WeaponsStorm = Config.WeaponsESX
+--Config.WeaponsStorm = Config.WeaponsESX
 --ESX.Config.Weapons
+Config.WeaponsStorm = {}
+
+
+Config.DefaultWeaponTintsStorm = {
+	[0] = ('tint_default'),
+	[1] = ('tint_green'),
+	[2] = ('tint_gold'),
+	[3] = ('tint_pink'),
+	[4] = ('tint_army'),
+	[5] = ('tint_lspd'),
+	[6] = ('tint_orange'),
+	[7] = ('tint_platinum')
+}
+
 
 Config.GroupWeapon = {
-    ["pistol"] = { ammoName = "mpistol",    boxName = "boxpistol",  type = 416676503},
-    ["smg"]    = { ammoName = "msmg",       boxName = "boxsmg",     type = -957766203},
-    ["shot"]   = { ammoName = "mshot",      boxName = "boxshot",    type = 860033945},
-    ["rifle"]  = { ammoName = "mrifle",     boxName = "boxrifle",   type = 970310034},
-    ["sniper"] = { ammoName = "msniper",    boxName = "boxsniper",  type = -1212426201},
-    ["other"]  = { ammoName = "notApp",     boxName = "notApp",     type = -999999},
+    ["pistol"] = { ammoName = "mpistol",    boxName = "boxpistol",  boxCapacity = 60,  wpCapacity = 250,  idGroup = 416676503},
+    ["smg"]    = { ammoName = "msmg",       boxName = "boxsmg",     boxCapacity = 60,  wpCapacity = 250,  idGroup = -957766203},
+    ["shot"]   = { ammoName = "mshot",      boxName = "boxshot",    boxCapacity = 60,  wpCapacity = 250,  idGroup = 860033945},
+    ["rifle"]  = { ammoName = "mrifle",     boxName = "boxrifle",   boxCapacity = 60,  wpCapacity = 250,  idGroup = 970310034},
+    ["sniper"] = { ammoName = "msniper",    boxName = "boxsniper",  boxCapacity = 60,  wpCapacity = 250,  idGroup = -1212426201},
+    ["other"]  = { ammoName = "notApp",     boxName = "notApp",     boxCapacity = 60,  wpCapacity = 250,  idGroup = -999999},
 }
 
 Config.LocWeapon = {
@@ -68,93 +86,55 @@ Config.LocWeapon = {
     ["WEAPON_PETROLCAN"]        = { itemName = "petrolcan",      group = "notApp"},   
 }
 
+Config.MasterComponents = {
+    'clip_default',
+	'clip_extended',
+	'flashlight', 
+	'suppressor', 
+	'luxary_finish',
+}
+
 
 Config.ComponentsItems = {}
 
-Config.Ammo = {
-    ["mpistol"]     = {quantity = nil, max = 250, nameItem = 'mpistol',     nameGroup = "pistol",   isBox = false,  itemRest = "mpistol",   idGroup = 416676503},
-    ["boxpistol"]   = {quantity = 60,  max = 250, nameItem = 'boxpistol',   nameGroup = "pistol",   isBox = true,   itemRest = "mpistol",   idGroup = 416676503},
+Config.Ammo = {}
 
-    ["msmg"]        = {quantity = nil, max = 250, nameItem = 'msmg',        nameGroup = "smg",      isBox = false,  itemRest = "msmg",      idGroup = -957766203},
-    ["boxsmg"]      = {quantity = 60,  max = 250, nameItem = 'boxsmg',      nameGroup = "smg",      isBox = true,   itemRest = "msmg",      idGroup = -957766203},
-
-    ["mshot"]       = {quantity = nil, max = 250, nameItem = 'mshot',       nameGroup = "shot",     isBox = false,  itemRest = "mshot",     idGroup = 860033945},
-    ["boxshot"]     = {quantity = 60,  max = 250, nameItem = 'boxshot',     nameGroup = "shot",     isBox = true,   itemRest = "mshot",     idGroup = 860033945},
-
-    ["mrifle"]      = {quantity = nil, max = 250, nameItem = 'mrifle',      nameGroup = "rifle",    isBox = false,  itemRest = "mrifle",    idGroup = 970310034},
-    ["boxrifle"]    = {quantity = 60,  max = 250, nameItem = 'boxrifle',    nameGroup = "rifle",    isBox = true,   itemRest = "mrifle",    idGroup = 970310034},
-
-    ["msniper"]     = {quantity = nil, max = 250, nameItem = 'msniper',     nameGroup = "sniper",   isBox = false,  itemRest = "msniper",   idGroup = 1212426201},
-    ["boxsniper"]   = {quantity = 60,  max = 250, nameItem = 'boxsniper',   nameGroup = "sniper",   isBox = true,   itemRest = "msniper",   idGroup = 1212426201},
-
-}
-
---[[
-	{
-		name = 'WEAPON_COMBATPISTOL',
-		label = ('weapon_combatpistol'),
-		ammo = {label = ('ammo_rounds'), hash = GetHashKey('AMMO_PISTOL')},
-		tints = Config.DefaultWeaponTints,
-		components = {
-			{name = 'clip_default', label = ('component_clip_default'), hash = GetHashKey('COMPONENT_COMBATPISTOL_CLIP_01')},
-			{name = 'clip_extended', label = ('component_clip_extended'), hash = GetHashKey('COMPONENT_COMBATPISTOL_CLIP_02')},
-			{name = 'flashlight', label = ('component_flashlight'), hash = GetHashKey('COMPONENT_AT_PI_FLSH')},
-			{name = 'suppressor', label = ('component_suppressor'), hash = GetHashKey('COMPONENT_AT_PI_SUPP')},
-			{name = 'luxary_finish', label = ('component_luxary_finish'), hash = GetHashKey('COMPONENT_COMBATPISTOL_VARMOD_LOWRIDER')}
-		}
-	},
-},]]
-
-
+local antiRep = false
 
 for k,v in pairs(Config.LocWeapon) do
-    for i=1, #Config.WeaponsStorm do
-        local hashGroup = 48488484848484
-        if Config.WeaponsStorm[i].name == k then --Founded my weapon          
-            for kk,vv in pairs(Config.GroupWeapon) do
-                if v.group == kk then
-                    Config.WeaponsStorm[i].ammoName = vv.ammoName 
-                    Config.WeaponsStorm[i].boxName = vv.boxName 
-                    Config.WeaponsStorm[i].type = vv.type 
-                    hashGroup = vv.type
-                end
-            end
-            for n=1, #Config.WeaponsStorm[i].components do
-                local tmpName = v.itemName.."_"..Config.WeaponsStorm[i].components[n].name
-                Config.WeaponsStorm[i].components[n].waponRef = k 
-                Config.WeaponsStorm[i].components[n].idGroup = hashGroup
-                Config.WeaponsStorm[i].components[n].itemName = tmpName
-                table.insert(Config.ComponentsItems, Config.WeaponsStorm[i].components[n])
-            end
-            Config.WeaponsStorm[i].itemName = v.itemName --Adding UsableItemName
-            Config.WeaponsStorm[i].group = v.group --Adding group appartenance
-            Config.WeaponsStorm[i].idGroup = hashGroup
-            break
+    local appIdGroup = 0
+    local appDefComp = ""
+    local appWaponRef = k
+    Config.WeaponsStorm[k] = {}
+    Config.WeaponsStorm[k].name = k
+    Config.WeaponsStorm[k].itemName = v.itemName
+    Config.WeaponsStorm[k].group = v.group
+    Config.WeaponsStorm[k].tints = Config.DefaultWeaponTintsStorm
+    appDefComp = v.itemName
+    for kk,vv in pairs(Config.GroupWeapon) do
+        if v.group == kk then
+            Config.WeaponsStorm[k].ammoName = vv.ammoName 
+            Config.WeaponsStorm[k].boxName = vv.boxName 
+            Config.WeaponsStorm[k].idGroup = vv.idGroup 
+            appIdGroup = vv.idGroup
+            local tmpAmmo = { quantity = nil,            max =  vv.wpCapacity, nameItem = vv.ammoName, itemRest = vv.ammoName, nameGroup = kk, isBox = false, idGroup = vv.idGroup}
+            local tmpBox  = { quantity = vv.boxCapacity, max =  vv.wpCapacity, nameItem = vv.boxName,  itemRest = vv.ammoName, nameGroup = kk, isBox = true,  idGroup = vv.idGroup}
+            table.insert(Config.Ammo, tmpAmmo)
+            table.insert(Config.Ammo, tmpBox)
         end
-
+    end
+    if Config.SingleItem then
+        appDefComp = "generic"
+        appIdGroup = 696969696969
+        appWaponRef = "allWeapon"
+    end
+    if not antiRep then
+        for i=1, #Config.MasterComponents do
+            local tmpComponents = { name = Config.MasterComponents[i], itemName = appDefComp.."_"..Config.MasterComponents[i], idGroup = appIdGroup, waponRef = appWaponRef}
+            table.insert(Config.ComponentsItems, tmpComponents)
+        end
+    end
+    if Config.SingleItem then
+        antiRep = true
     end
 end
-
---[[
-	{
-		name = 'WEAPON_COMBATPISTOL',
-        
-        --ADDED DATA
-        itemName = "combatpistol",
-        group = "pistol",
-        idGroup = 416676503,
-        ammoName = "mpistol",
-        boxName = "boxpistol",
-
-		label = ('weapon_combatpistol'),
-		ammo = {label = ('ammo_rounds'), hash = GetHashKey('AMMO_PISTOL')},
-		tints = Config.DefaultWeaponTints,
-		components = {
-			{name = 'clip_default', itemName='combatpistol_clip_default', idGroup=416676503, waponRef="WEAPON_COMBATPISTOL", label = ('component_clip_default'), hash = GetHashKey('COMPONENT_COMBATPISTOL_CLIP_01')},
-			{name = 'clip_extended',itemName='combatpistol_clip_extended', idGroup=416676503, waponRef="WEAPON_COMBATPISTOL", label = ('component_clip_extended'), hash = GetHashKey('COMPONENT_COMBATPISTOL_CLIP_02')},
-			{name = 'flashlight', itemName='combatpistol_flashlight', idGroup=416676503, waponRef="WEAPON_COMBATPISTOL", label = ('component_flashlight'), hash = GetHashKey('COMPONENT_AT_PI_FLSH')},
-			{name = 'suppressor', itemName='combatpistol_suppressor', idGroup=416676503, waponRef="WEAPON_COMBATPISTOL", label = ('component_suppressor'), hash = GetHashKey('COMPONENT_AT_PI_SUPP')},
-			{name = 'luxary_finish', itemName='combatpistol_luxary_finish', idGroup=416676503, waponRef="WEAPON_COMBATPISTOL", label = ('component_luxary_finish'), hash = GetHashKey('COMPONENT_COMBATPISTOL_VARMOD_LOWRIDER')}
-		}
-	},
-},]]

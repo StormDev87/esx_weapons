@@ -2,7 +2,7 @@ local ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 
---This is di
+--This is diassemble weapons
 RegisterServerEvent('disassembleWeapon')
 AddEventHandler('disassembleWeapon', function(isDead, weapon_t)
  --print("Arrivo in smontaarmi")
@@ -26,10 +26,19 @@ end)
 
 --This is used for add ammo on weapons
 RegisterServerEvent('esx_weapons:elabData')
-AddEventHandler('esx_weapons:elabData', function(weaponHash, data, weaponName, pedAmmo)
+AddEventHandler('esx_weapons:elabData', function(weaponHash, data, isComp)
+    if isComp then
+      elabDataComp(weaponHash, data)
+    else
+      elabDataAmmo(weaponHash, data)      
+    end
+end)
+
+function elabDataAmmo(weaponHash, data)
   local regiveEtc = false
-  local _pedAmmo = pedAmmo
-  local _weaponName = weaponName
+  local _pedAmmo = 0
+  local _weaponName = ESX.GetWeaponFromHash(weaponHash).name
+  print("_weaponName", _weaponName)
   local xPlayer  = ESX.GetPlayerFromId(source)
   
   local quantity = 0
@@ -40,17 +49,16 @@ AddEventHandler('esx_weapons:elabData', function(weaponHash, data, weaponName, p
   else
     quantity = xPlayer.getInventoryItem(data.nameItem).count
   end 
-
-  local newPedAmmo = getPedAmmoForType(xPlayer, data.idGroup)
-  _pedAmmo = newPedAmmo
-
+  _pedAmmo = getPedAmmoForType(xPlayer, data.idGroup)
   local somma = math.floor(_pedAmmo + quantity)
   local appSomma = somma
-  
+
   if somma >= data.max then
     appSomma = data.max
   end
   local qtAmmo = appSomma - _pedAmmo
+
+  print("qtAmmo", qtAmmo)
 
   if data.isBox then
     local qtRegive = quantity - qtAmmo
@@ -60,22 +68,19 @@ AddEventHandler('esx_weapons:elabData', function(weaponHash, data, weaponName, p
   loadoutClearFortype(xPlayer, data.nameGroup)
   xPlayer.removeInventoryItem(data.itemRest, qtAmmo)
   xPlayer.addWeaponAmmo(_weaponName, qtAmmo)
+end
 
-end)
 
-
---This is used for assemble components on weapons
-RegisterServerEvent('esx_weapons:elabDataComp')
-AddEventHandler('esx_weapons:elabDataComp', function(weaponHash, component)
+function elabDataComp(weaponHash, data)
   print("Arrivo sul server esx_weapons elabDataComp", weaponHash)
   local xPlayer  = ESX.GetPlayerFromId(source)
   local weaponName = ESX.GetWeaponFromHash(weaponHash)
   if weaponName and weaponName.name then
-    if (weaponName.name == component.waponRef) or Config.SingleItem then
-      if  not xPlayer.hasWeaponComponent(weaponName.name , component.name) then
-          xPlayer.removeInventoryItem(component.itemName, 1)
-          print(weaponName.name, component.name)
-          xPlayer.addWeaponComponent(weaponName.name, component.name)
+    if (weaponName.name == data.waponRef) or Config.SingleItem then
+      if  not xPlayer.hasWeaponComponent(weaponName.name , data.name) then
+          xPlayer.removeInventoryItem(data.itemName, 1)
+          print(weaponName.name, data.name)
+          xPlayer.addWeaponComponent(weaponName.name, data.name)
       else
         xPlayer.showNotification('Hai già questo compoente equipaggiato!')
       end
@@ -83,7 +88,7 @@ AddEventHandler('esx_weapons:elabDataComp', function(weaponHash, component)
       xPlayer.showNotification('Non è L\'arma giusta!')
     end
   end
-end)
+end
 
 
 --Usable Item
@@ -102,12 +107,16 @@ AddEventHandler('onResourceStart',function(resName)
    end 
    for k,v in pairs(Config.Ammo) do
     --Using ammo
-     ESX.RegisterUsableItem(k, function(source)
+    --print("k,v", k,v)
+    --print("encode v", json.encode(v))
+     ESX.RegisterUsableItem(v.nameItem, function(source)
      TriggerClientEvent('esx_weapons:useItem', source,  v, false)
      end)
    end
     for k,v in pairs(Config.ComponentsItems) do
       --Using Components
+      print("k,v", k,v)
+      print("encode v", json.encode(v))
       ESX.RegisterUsableItem(v.itemName, function(source)
       TriggerClientEvent('esx_weapons:useItem', source,  v, true)
       end)
@@ -115,46 +124,4 @@ AddEventHandler('onResourceStart',function(resName)
  end
 end)
 
-
-function loadoutClearFortype(myxPlayer, type)
-	local xPlayer  = myxPlayer
-  for a,b in pairs(Config.WeaponsStorm) do
-    for k,v in ipairs(xPlayer.getLoadout()) do
-      if v.name == v.name and b.type == type then
-      xPlayer.removeWeaponAmmo(myPistol[i], v.ammo)
-      end
-    end
-  end 
-end
-
-function getPedAmmoForType(myxPlayer, idGroup)
-	local result = 0
-  local xPlayer  = myxPlayer
-  for a,b in pairs(Config.WeaponsStorm) do
-    if b.idGroup == idGroup then
-      for k,v in ipairs(xPlayer.getLoadout()) do
-        print(json.encode(v))
-        if v.ammo ~= 0 then
-          result = v.ammo
-        end
-      end
-    break
-    end
-  end 
-  return result
-end
-
-
-function getInfoWeapon(weapon_t)
-  result = {}
-  for k,v in pairs(Config.WeaponsStorm) do
-    if v.name == weapon_t then
-      print(v.ammoName, v.itemName)
-        result.ammoName = v.ammoName
-        result.itemName = v.itemName
-        break
-    end
-  end
-  return result
-end
 

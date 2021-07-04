@@ -92,11 +92,7 @@ AddEventHandler('esx_weapons:useItem', function(data, isComp)
 	local pedAmmo = GetAmmoInPedWeapon(ped, weaponHash)
 	local correctType = controlWeaponType(weaponHash, data.idGroup)
 	if IsPedArmed(ped, 4) and (correctType.value or (Config.SingleItem and isComp)) then
-		if not isComp then
-			TriggerServerEvent('esx_weapons:elabData', weaponHash, data, correctType.name, pedAmmo)
-		else
-			TriggerServerEvent('esx_weapons:elabDataComp', weaponHash, data)
-		end
+		TriggerServerEvent('esx_weapons:elabData', weaponHash, data, isComp)
 	else
 		ESX.ShowNotification("Non hai l\'arma corretta in mano!", true, true, nil)
 	end
