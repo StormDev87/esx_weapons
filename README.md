@@ -1,2 +1,2 @@
 # esx_weapons
-this is manegement script for weapons
+this is management script for weapons
