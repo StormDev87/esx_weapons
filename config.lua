@@ -133,8 +133,6 @@ for k,v in pairs(Config.LocWeapon) do
             local tmpComponents = { name = Config.MasterComponents[i], itemName = appDefComp.."_"..Config.MasterComponents[i], idGroup = appIdGroup, waponRef = appWaponRef}
             table.insert(Config.ComponentsItems, tmpComponents)
         end
-    end
-    if Config.SingleItem then
-        antiRep = true
+        antiRep = Config.SingleItem
     end
 end
