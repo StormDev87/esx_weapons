@@ -18,6 +18,3 @@ Management script for weapons
 
   -Add skin system;
   
-  -Add system of serial number;
-  
-  -Add durability system.
