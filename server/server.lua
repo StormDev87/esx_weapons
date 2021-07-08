@@ -1,19 +1,15 @@
 local ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-
 --This is diassemble weapons
 RegisterServerEvent('disassembleWeapon')
 AddEventHandler('disassembleWeapon', function(isDead, weapon_t)
- --print("Arrivo in smontaarmi")
   local _source = source
   local xPlayer  = ESX.GetPlayerFromId(source)
-  --getComponents from loadout for weapon
   for k,v in pairs(xPlayer.loadout) do
     if v.name == weapon_t or isDead then
      local thisWeapon = getInfoWeapon(v.name)
      for kk,vv in pairs(v.components) do
-        print(thisWeapon.itemName)
         if Config.SingleItem then
           xPlayer.addInventoryItem("generic".."_"..vv, 1)
         else
@@ -76,14 +72,12 @@ end
 
 
 function elabDataComp(weaponHash, data)
-  print("Arrivo sul server esx_weapons elabDataComp", weaponHash)
   local xPlayer  = ESX.GetPlayerFromId(source)
   local weaponName = ESX.GetWeaponFromHash(weaponHash)
   if weaponName and weaponName.name then
     if (weaponName.name == data.waponRef) or Config.SingleItem then
       if  not xPlayer.hasWeaponComponent(weaponName.name , data.name) then
           xPlayer.removeInventoryItem(data.itemName, 1)
-          print(weaponName.name, data.name)
           xPlayer.addWeaponComponent(weaponName.name, data.name)
       else
         xPlayer.showNotification('Hai già questo compoente equipaggiato!')
@@ -110,17 +104,11 @@ AddEventHandler('onResourceStart',function(resName)
       end
    end 
    for k,v in pairs(Config.Ammo) do
-    --Using ammo
-    --print("k,v", k,v)
-    --print("encode v", json.encode(v))
      ESX.RegisterUsableItem(v.nameItem, function(source)
      TriggerClientEvent('esx_weapons:useItem', source,  v, false)
      end)
    end
     for k,v in pairs(Config.ComponentsItems) do
-      --Using Components
-      --print("k,v", k,v)
-      --print("encode v", json.encode(v))
       ESX.RegisterUsableItem(v.itemName, function(source)
       TriggerClientEvent('esx_weapons:useItem', source,  v, true)
       end)
