@@ -14,7 +14,11 @@ AddEventHandler('disassembleWeapon', function(isDead, weapon_t)
      local thisWeapon = getInfoWeapon(v.name)
      for kk,vv in pairs(v.components) do
         print(thisWeapon.itemName)
-        xPlayer.addInventoryItem(thisWeapon.itemName.."_"..vv, 1)
+        if Config.SingleItem then
+          xPlayer.addInventoryItem("generic".."_"..vv, 1)
+        else
+          xPlayer.addInventoryItem(thisWeapon.itemName.."_"..vv, 1)
+        end
         xPlayer.removeWeaponComponent(v.name, vv)
      end
         xPlayer.addInventoryItem(thisWeapon.ammoName, v.ammo)  
