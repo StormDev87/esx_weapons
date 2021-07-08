@@ -115,8 +115,8 @@ AddEventHandler('onResourceStart',function(resName)
    end
     for k,v in pairs(Config.ComponentsItems) do
       --Using Components
-      print("k,v", k,v)
-      print("encode v", json.encode(v))
+      --print("k,v", k,v)
+      --print("encode v", json.encode(v))
       ESX.RegisterUsableItem(v.itemName, function(source)
       TriggerClientEvent('esx_weapons:useItem', source,  v, true)
       end)
