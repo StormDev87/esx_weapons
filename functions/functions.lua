@@ -9,6 +9,7 @@ function loadoutClearFortype(myxPlayer, type)
     end
   end 
 end
+--test
 
 --This function is needed for get the max value of ammo for specific group of weapons
 function getPedAmmoForType(myxPlayer, idGroup)

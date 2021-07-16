@@ -3,6 +3,8 @@ local playerData 				= {}
 local weaponList				= {}
 local Time                      = 0
 local Time2                     = 0
+local pippo = nil
+
 
 Citizen.CreateThread(function()
     while ESX == nil do
